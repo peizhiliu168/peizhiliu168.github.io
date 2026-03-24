@@ -7,8 +7,6 @@ redirect_from:
   - /about.html
 ---
 
-Hi, I'm Peizhi! I am a 2nd year Ph.D. student at Northwestern working under Professor Peter Dinda. I previously also received both my B.S. and M.S. at Northwestern, so I've been in Evanston for quite some time!
-
-I am broadly interested in parallel and distributed computing systems. My current research is focused on enhancing the communication, performance, and programmability of these systems in light of heterogeneous hardware. I am an NSF Graduate Research Fellow.
+I'm a 3rd year Ph.D. candidate at Northwestern under Professor Peter Dinda. I am broadly interested in parallel and distributed computing systems. My current research is focused on enhancing the communication, performance, and programmability of these systems in light of heterogeneous hardware. I am an NSF Graduate Research Fellow.
 
 
