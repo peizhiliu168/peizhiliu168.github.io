@@ -23,7 +23,7 @@
     { stop: "sched", kind: "console", x: 1, y: 5, w: 2, h: 1, label: "SLURM", marker: true },
     { stop: "fabric", kind: "switch", x: 9, y: 7, w: 8, h: 1, label: "INTERCONNECT", marker: true },
     { stop: "archive", kind: "tape", x: 10, y: 15, w: 6, h: 1, label: "ARCHIVE", marker: true },
-    { stop: "blackboard", kind: "blackboard", x: 22, y: 1, w: 4, h: 1, marker: true, markerAt: [26.45, .7] },
+    { stop: "blackboard", kind: "blackboard", x: 22, y: 1, w: 4, h: 1, marker: true, markerAt: [26.45, .7], box: [21.78, .02, 4.44, 1.24] },
     { stop: "nsf", kind: "plaque", x: 26, y: 5, w: 1, h: 1, marker: true },
     { stop: "cv", kind: "cabinet", x: 26, y: 9, w: 1, h: 2, marker: true },
     { stop: "contact", kind: "terminal", x: 23, y: 14, w: 3, h: 1, marker: true },
@@ -280,21 +280,31 @@
     rect(cx - w / 2, cy - .2, w, .4, "#f3f4f6"); rect(cx - w / 2, cy + .2, w, px * 1.5, "#8a929c");
     text(label, cx, cy + .01, .3, "#1d232a");
   }
-  // Cables fan out from the interconnect up to the CPU racks and down to the GPU racks.
+  // Cables fan out from the interconnect up to the CPU racks, down to the GPU racks, and down
+  // to the tape archive through the gap between the GPU racks. Only the left half is listed;
+  // each cable is mirrored across the room's centre line (x = 13) so both sides match,
+  // including the packets riding them.
+  const MID = 13;
+  const LEFT_CABLES = [
+    { c: "#58a9ff", up: true, p: [[9.6, 6.78], [9.6, 5.4], [6.5, 5.2], [6.5, 3.95]] },
+    { c: "#d27cff", up: true, p: [[11.8, 6.78], [11.8, 5.4], [9.5, 5.2], [9.5, 3.95]] },
+    { c: "#86e26f", up: false, p: [[10.1, 7.95], [10.1, 9.3], [6.5, 9.5], [6.5, 10.75]] },
+    { c: "#f2b440", up: false, p: [[12.1, 7.95], [12.1, 9.3], [9.5, 9.5], [9.5, 10.75]] },
+    { c: "#46d6cf", up: false, p: [[12.6, 7.95], [12.6, 11.4], [12.5, 13], [11.3, 14.75]] },
+  ];
   const CABLES = [];
-  [6.5, 9.5, 15.5, 18.5].forEach((ex, i) => {
-    const sx = 9.6 + i * 2.2;
-    CABLES.push({ c: ["#58a9ff", "#f2b440", "#d27cff", "#58a9ff"][i], p: [[sx, 6.78], [sx, 5.4], [ex, 5.2], [ex, 3.95]] });
-    CABLES.push({ c: ["#86e26f", "#f2b440", "#d27cff", "#86e26f"][i], p: [[sx + .5, 7.95], [sx + .5, 9.3], [ex, 9.5], [ex, 10.75]] });
+  LEFT_CABLES.forEach((cable, n) => {
+    CABLES.push({ ...cable, phase: n * .37 });
+    CABLES.push({ ...cable, phase: n * .37, p: cable.p.map(([x, y]) => [2 * MID - x, y]) });
   });
   const bez = (p, k) => { const u = 1 - k; return [0, 1].map(d => u * u * u * p[0][d] + 3 * u * u * k * p[1][d] + 3 * u * k * k * p[2][d] + k * k * k * p[3][d]); };
   function drawCables(t) {
     ctx.lineWidth = 2.2 * px; ctx.lineCap = "round"; ctx.globalAlpha = .6;
     CABLES.forEach(({ c, p }) => { ctx.strokeStyle = c; ctx.beginPath(); ctx.moveTo(...p[0]); ctx.bezierCurveTo(...p[1], ...p[2], ...p[3]); ctx.stroke(); });
     ctx.globalAlpha = 1;
-    // packets riding the cables, staggered
-    if (!reduce) CABLES.forEach(({ p }, i) => {
-      const k = (t * .45 + i * .37) % 1, [bx, by] = bez(p, i % 2 ? k : 1 - k);
+    // packets riding the cables, staggered; mirrored cables carry mirrored packets
+    if (!reduce) CABLES.forEach(({ p, up, phase }) => {
+      const k = (t * .45 + phase) % 1, [bx, by] = bez(p, up ? 1 - k : k);
       rect(bx - 2 * px, by - 2 * px, 4 * px, 4 * px, "#fff7d6");
     });
   }
@@ -356,7 +366,8 @@
   function drawHighlight(s, color) {
     if (!s) return;
     ctx.strokeStyle = color; ctx.lineWidth = 2.5 * px; ctx.setLineDash([.15, .1]);
-    partsOf(s.id).forEach(o => ctx.strokeRect(o.x - .08, o.y - .3, o.w + .16, o.h + .38)); ctx.setLineDash([]);
+    // `box` overrides the outline for things drawn away from their floor tile (the blackboard hangs on the wall)
+    partsOf(s.id).forEach(o => o.box ? ctx.strokeRect(...o.box) : ctx.strokeRect(o.x - .08, o.y - .3, o.w + .16, o.h + .38)); ctx.setLineDash([]);
   }
   // The player is a black-and-white cat in a purple sweater: black cap over the ears, black rump patch and tail, amber eyes.
   function drawPlayer(t) {
