@@ -288,25 +288,28 @@
   // including the packets riding them.
   const MID = 13;
   const LEFT_CABLES = [
-    { c: "#58a9ff", up: true, p: [[9.6, 6.78], [9.6, 5.4], [6.5, 5.2], [6.5, 3.95]] },
-    { c: "#d27cff", up: true, p: [[11.8, 6.78], [11.8, 5.4], [9.5, 5.2], [9.5, 3.95]] },
-    { c: "#86e26f", up: false, p: [[10.1, 7.95], [10.1, 9.3], [6.5, 9.5], [6.5, 10.75]] },
-    { c: "#f2b440", up: false, p: [[12.1, 7.95], [12.1, 9.3], [9.5, 9.5], [9.5, 10.75]] },
-    { c: "#46d6cf", up: false, p: [[12.6, 7.95], [12.6, 11.4], [12.5, 13], [11.3, 14.75]] },
+    // each rack group has one cable sending to the interconnect (in) and one receiving from it
+    { c: "#58a9ff", in: true, p: [[9.6, 6.78], [9.6, 5.4], [6.5, 5.2], [6.5, 3.95]] },
+    { c: "#d27cff", in: false, p: [[11.8, 6.78], [11.8, 5.4], [9.5, 5.2], [9.5, 3.95]] },
+    { c: "#86e26f", in: true, p: [[10.1, 7.95], [10.1, 9.3], [6.5, 9.5], [6.5, 10.75]] },
+    { c: "#f2b440", in: false, p: [[12.1, 7.95], [12.1, 9.3], [9.5, 9.5], [9.5, 10.75]] },
+    // the archive is one group spanning both sides, so its mirrored cable runs the other way
+    { c: "#46d6cf", in: true, flipMirror: true, p: [[12.6, 7.95], [12.6, 11.4], [12.5, 13], [11.3, 14.75]] },
   ];
   const CABLES = [];
   LEFT_CABLES.forEach((cable, n) => {
     CABLES.push({ ...cable, phase: n * .37 });
-    CABLES.push({ ...cable, phase: n * .37, p: cable.p.map(([x, y]) => [2 * MID - x, y]) });
+    CABLES.push({ ...cable, phase: n * .37, in: cable.flipMirror ? !cable.in : cable.in, p: cable.p.map(([x, y]) => [2 * MID - x, y]) });
   });
   const bez = (p, k) => { const u = 1 - k; return [0, 1].map(d => u * u * u * p[0][d] + 3 * u * u * k * p[1][d] + 3 * u * k * k * p[2][d] + k * k * k * p[3][d]); };
   function drawCables(t) {
     ctx.lineWidth = 2.2 * px; ctx.lineCap = "round"; ctx.globalAlpha = .6;
     CABLES.forEach(({ c, p }) => { ctx.strokeStyle = c; ctx.beginPath(); ctx.moveTo(...p[0]); ctx.bezierCurveTo(...p[1], ...p[2], ...p[3]); ctx.stroke(); });
     ctx.globalAlpha = 1;
-    // packets riding the cables, staggered; mirrored cables carry mirrored packets
-    if (!reduce) CABLES.forEach(({ p, up, phase }) => {
-      const k = (t * .45 + phase) % 1, [bx, by] = bez(p, up ? 1 - k : k);
+    // packets ride each cable toward the interconnect (in) or away from it; every cable's p[0]
+    // is its switch end. Staggered, with mirrored cables in step.
+    if (!reduce) CABLES.forEach(({ p, phase, in: toSwitch }) => {
+      const k = (t * .45 + phase) % 1, [bx, by] = bez(p, toSwitch ? 1 - k : k);
       rect(bx - 2 * px, by - 2 * px, 4 * px, 4 * px, "#fff7d6");
     });
   }
