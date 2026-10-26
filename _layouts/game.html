@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Caveat:wght@600&family=Silkscreen&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
-  <link rel="stylesheet" href="{{ '/assets/css/machine-room.css' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/assets/css/machine-room.css' | relative_url }}?v={{ site.time | date: '%s' }}">
   <script type="application/ld+json">
     { "@context": "https://schema.org", "@type": "Person", "name": {{ site.author.name | jsonify }}, "url": {{ site.url | jsonify }},
       "affiliation": {{ site.author.employer | jsonify }},
@@ -57,6 +57,6 @@
     <p class="locked" id="locked" hidden></p>
   </section>
 </div>
-<script src="{{ '/assets/js/machine-room.js' | relative_url }}"></script>
+<script src="{{ '/assets/js/machine-room.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
 </body>
 </html>

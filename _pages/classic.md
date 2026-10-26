@@ -23,10 +23,5 @@ Publications
     {%- if pub.paperurl %} <a href="{{ pub.paperurl | relative_url }}">PDF</a>{% endif %}
     {%- if pub.doi %} · <a href="https://doi.org/{{ pub.doi }}">DOI</a>{% endif %}
   </p>
-  {%- if pub.bibtex %}
-  <details class="bibtex"><summary>BibTeX</summary><pre><code>{{ pub.bibtex | strip | escape }}</code></pre></details>
-  {%- endif %}
 {%- endfor %}
 </div>
-
-<p><a href="{{ '/publications.bib' | relative_url }}">Download all as a .bib file</a></p>
