@@ -18,6 +18,10 @@
         </ul>
         <ul class="hidden-links hidden"></ul>
       </nav>
+      {% for link in site.data.navigation.right %}
+        <a class="masthead__right-link" href="{{ link.url | relative_url }}" title="{{ link.title }}" aria-label="{{ link.title }}">{% if link.icon %}{% include {{ link.icon }} %}{% else %}{{ link.label | default: link.title }}{% endif %}</a>
+      {% endfor %}
+      {% include machine-room-cat-tail.html %}
     </div>
   </div>
 </div>

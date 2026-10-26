@@ -10,3 +10,9 @@ main:
     
   - title: "CV"
     url: /files/CV.pdf
+
+# Links pinned to the right end of the header.
+right:
+  - title: "Play the game"
+    icon: machine-room-cat.svg
+    url: /game/

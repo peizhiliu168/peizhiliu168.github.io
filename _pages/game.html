@@ -1,0 +1,81 @@
+---
+permalink: /game/
+layout: game
+title: "Peizhi Liu · Machine Room"
+description: "Peizhi Liu is a Ph.D. candidate at Northwestern University working on parallel and distributed systems, collective communication and GPU interconnects."
+---
+      <article data-poi="desk">
+        <p class="who">BADGE DESK</p>
+        <h2>Welcome to the machine room</h2>
+        <p>I'm Peizhi Liu, a Ph.D. candidate at Northwestern University. I work on parallel and distributed systems, mostly on making communication between CPUs and GPUs in supercomputers faster.</p>
+        <p>Click anywhere to walk, or hold the mouse down to steer. Everything with a <b>!</b> over it tells you something about me.</p>
+      </article>
+      <article data-poi="fabric">
+        <p class="who">INTERCONNECT</p>
+        <h2>Where my research lives</h2>
+        <p>Collective operations like Allgather and Allreduce move data between every node at once. How fast they run depends on the network topology, how many ports each node has, and the message size.</p>
+        <p>I design collective algorithms that adapt to the hardware instead of assuming one shape, and use calibrated LogGP models to choose their parameters without brute-force tuning.</p>
+      </article>
+      <article data-poi="compute">
+        <p class="who">COMPUTE NODES · CPU + GPU</p>
+        <h2>One cluster, mixed hardware</h2>
+        <p>CPU racks above the interconnect, GPU racks below it, all tied together by a multi-level network. Machines like this are why my work exists: software tuned for one shape of hardware runs poorly on the next.</p>
+        <p>My experiments have run on Frontier at Oak Ridge, Polaris at Argonne and Delta at NCSA. A NAIRR Pilot award gave my GPU collectives work <span class="stat">60,000</span> GPU hours across three supercomputers, plus $25K in AWS resources.</p>
+      </article>
+      <article data-poi="archive">
+        <p class="who">TAPE ARCHIVE</p>
+        <h2>Publications</h2>
+        <ul class="pubs">
+          {%- assign pubs = site.publications | sort: "date" | reverse %}
+          {%- for pub in pubs %}
+          <li>
+            <p class="venue">{{ pub.short_venue | default: pub.venue }}</p>
+            <p><b>{{ pub.title }}</b></p>
+            <p class="cite">{{ pub.authors_short | replace: "P. Liu", '<span class="me">P. Liu</span>' }}{% if pub.highlight %}. {{ pub.highlight }}{% endif %}</p>
+            <div class="links">
+              {%- if pub.paperurl %}<a href="{{ pub.paperurl | relative_url }}">PDF</a>{% endif %}
+              {%- if pub.doi %}<a href="https://doi.org/{{ pub.doi }}">DOI</a>{% endif %}
+              <a href="{{ pub.url | relative_url }}">Abstract</a>
+            </div>
+          </li>
+          {%- endfor %}
+        </ul>
+      </article>
+      <article data-poi="sched">
+        <p class="who">SCHEDULER CONSOLE</p>
+        <h2>What's running now</h2>
+<pre class="squeue">$ squeue -u peizhi
+ JOBID  NAME          ST  PARTITION
+     1  phd-research  <span class="r">R</span>   comm-perf</pre>
+        <p>My current focus: making communication in parallel and distributed systems faster with new models, mappings and mechanisms. I'm also mentoring two undergraduate students on this work. Finished work is in the tape archive.</p>
+      </article>
+      <article data-poi="blackboard">
+        <p class="who">BLACKBOARD</p>
+        <h2>Advisor</h2>
+        <p>I'm advised by Professor Peter Dinda at Northwestern University in Evanston, Illinois.</p>
+        <p>The chalk sketch is recursive doubling: at each step every rank swaps data with a partner twice as far away.</p>
+      </article>
+      <article data-poi="nsf">
+        <p class="who">PLAQUE</p>
+        <h2>NSF Graduate Research Fellow</h2>
+        <p>My Ph.D. is supported by the National Science Foundation Graduate Research Fellowship, 2025 to 2028.</p>
+        <p>Also on the wall: a NAIRR Pilot Resource Award (2024 to 2026), a National Merit Scholarship, and the Dean's List every quarter of undergrad.</p>
+      </article>
+      <article data-poi="cv">
+        <p class="who">FILING CABINET</p>
+        <h2>The full record</h2>
+        <p>Education, research, industry internships, teaching, service and awards, in one PDF.</p>
+        <p>Recent service: co-reviewer for SC 2026, IPDPS 2026, and HPDC 2025 and 2026.</p>
+        <div class="links"><a href="{{ '/files/CV.pdf' | relative_url }}">Open CV (PDF)</a></div>
+      </article>
+      <article data-poi="contact">
+        <p class="who">OPERATOR TERMINAL</p>
+        <h2>Get in touch</h2>
+        <div class="contact">
+          <div><span>EMAIL</span>{{ site.author.email }}</div>
+          <div><span>SCHOLAR</span><a href="https://scholar.google.com/citations?user=7Mtdj9YAAAAJ&amp;hl=en">Google Scholar</a></div>
+          <div><span>GITHUB</span><a href="https://github.com/peizhiliu168">peizhiliu168</a></div>
+          <div><span>LINKEDIN</span><a href="https://www.linkedin.com/in/peizhiliu">peizhiliu</a></div>
+          <div><span>ORCID</span><a href="https://orcid.org/0009-0007-3446-6019">0009-0007-3446-6019</a></div>
+        </div>
+      </article>

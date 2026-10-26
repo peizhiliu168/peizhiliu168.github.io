@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="{{ site.locale | slice: 0, 2 | default: 'en' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{{ page.title | default: site.title }}</title>
+  <meta name="description" content="{{ page.description | default: site.description | strip_html | strip }}">
+  <link rel="canonical" href="{{ page.url | absolute_url }}">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{ page.title | default: site.title }}">
+  <meta property="og:description" content="{{ page.description | default: site.description | strip_html | strip }}">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  <meta property="og:image" content="{{ '/images/' | append: site.author.avatar | absolute_url }}">
+  <link rel="icon" href="{{ '/images/favicon.ico' | relative_url }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Caveat:wght@600&family=Silkscreen&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="{{ '/assets/css/machine-room.css' | relative_url }}">
+  <script type="application/ld+json">
+    { "@context": "https://schema.org", "@type": "Person", "name": {{ site.author.name | jsonify }}, "url": {{ site.url | jsonify }},
+      "affiliation": {{ site.author.employer | jsonify }},
+      "sameAs": [{{ site.author.googlescholar | jsonify }}, {{ site.author.orcid | jsonify }}, "https://github.com/{{ site.author.github }}", "https://www.linkedin.com/in/{{ site.author.linkedin }}"] }
+  </script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>{{ site.author.name }}</h1>
+    <p>Ph.D. candidate, Northwestern · parallel &amp; distributed systems</p>
+    <nav aria-label="Site">
+      <a href="{{ '/' | relative_url }}">← Main site</a>
+      <a href="{{ '/publications/' | relative_url }}">Publications</a>
+      <a href="{{ '/files/CV.pdf' | relative_url }}">CV</a>
+    </nav>
+  </header>
+
+  <div class="game">
+    <div class="stage" id="stage">
+      <canvas id="cv" aria-label="Top-down machine room. Click or tap to walk; arrow keys and WASD also move you." tabindex="0"></canvas>
+      <div class="hud"><span>STOPS <b id="count">0/0</b></span></div>
+      <div class="hud hud-bottom"><span class="help">CLICK TO WALK · HOLD TO STEER · WASD</span></div>
+    </div>
+    <aside class="dialog" id="dialog" aria-live="polite"></aside>
+  </div>
+
+  <div class="index">
+    <h3>WALK STRAIGHT TO</h3>
+    <div class="chips" id="chips"></div>
+    <button type="button" class="reset" id="reset">Reset progress</button>
+  </div>
+
+  <section class="text" id="text">
+    <h2 class="notes-title">What you've found</h2>
+    <div id="stops">
+{{ content }}
+    </div>
+    <p class="locked" id="locked" hidden></p>
+  </section>
+</div>
+<script src="{{ '/assets/js/machine-room.js' | relative_url }}"></script>
+</body>
+</html>

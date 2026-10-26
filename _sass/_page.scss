@@ -399,3 +399,20 @@
   font-size: $type-size-6;
   text-transform: uppercase;
 }
+
+/* BibTeX toggle under each publication */
+details.bibtex {
+  margin: -0.5em 0 1.5em;
+  font-size: $type-size-6;
+
+  summary {
+    cursor: pointer;
+    color: $link-color;
+  }
+
+  pre {
+    margin-top: 0.5em;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+}

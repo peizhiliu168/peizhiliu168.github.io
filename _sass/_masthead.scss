@@ -37,12 +37,66 @@
 }
 
 .masthead__menu {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  #site-nav {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
 
   ul {
     margin: 0;
     padding: 0;
     clear: both;
     list-style-type: none;
+  }
+}
+
+.masthead__right-link {
+  flex: none;
+  display: block;
+  padding: 0.2rem 0.3rem;
+  line-height: 0;
+  color: mix(#fff, $masthead-link-color, 35%);
+
+  .cat-icon {
+    display: block;
+    width: 32px;
+    height: auto;
+    overflow: visible;
+    transition: transform 0.15s ease-out;
+  }
+
+  .cat-icon__ears {
+    transition: transform 0.12s ease-out;
+  }
+
+  &:hover .cat-icon,
+  &:focus-visible .cat-icon {
+    transform: translateY(-3px);
+  }
+
+  // Annoyed cat: the ears flatten while the tail lashes (the tail is animated by
+  // _includes/machine-room-cat-tail.html).
+  &:hover .cat-icon__ears,
+  &:focus-visible .cat-icon__ears {
+    transform: translateY(4px);
+  }
+
+  &:hover {
+    color: $masthead-link-color-hover;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .masthead__right-link .cat-icon {
+    transition: none;
+  }
+
+  .masthead__right-link .cat-icon__ears {
+    transition: none;
   }
 }
 
