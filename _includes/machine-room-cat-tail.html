@@ -1,26 +1,28 @@
 <script>
-// Lash the header cat's tail on hover. The tail is a chain of short joints; a bending wave
-// runs from the base to the tip while the base lifts and drops, so the tail sweeps and
-// whips across the floor instead of turning as one stiff piece.
+/* Lash the header cat's tail on hover. The tail is a chain of short joints; a bending wave
+   runs from the base to the tip while the base lifts and drops, so the tail sweeps and
+   whips across the floor instead of turning as one stiff piece.
+   Use only block comments in here: the published site minifies HTML onto one line,
+   and a line comment would swallow the rest of the script. */
 (function () {
   var link = document.querySelector(".masthead__right-link");
   var paths = link ? link.querySelectorAll(".cat-icon__tail path") : [];
   if (paths.length !== 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   var BASE_X = -46, BASE_Y = 1.5, SEG = 4.3, FLOOR = 2.5, PERIOD = 800;
-  // resting elevation of each joint above the floor, in degrees (matches the SVG)
+  /* resting elevation of each joint above the floor, in degrees (matches the SVG) */
   var REST = [-2, 0, 0, 1, 6, 20, 45, 70];
   var N = REST.length, rest = paths[0].getAttribute("d"), raf = 0, start = 0;
   function shape(t) {
     var phi = 2 * Math.PI * t;
-    var lift = 32 * (0.5 - 0.5 * Math.cos(phi));          // base raises the tail off the floor and drops it
+    var lift = 32 * (0.5 - 0.5 * Math.cos(phi));          /* base raises the tail off the floor and drops it */
     var x = BASE_X, y = BASE_Y, d = "M" + x + " " + y;
     for (var i = 0; i < N; i++) {
       var k = i / (N - 1);
-      // the bend travels toward the tip and grows along the tail: a whip
+      /* the bend travels toward the tip and grows along the tail: a whip */
       var e = REST[i] * 0.6 + lift * (1 - 0.4 * k) + 38 * k * Math.sin(phi - 0.9 * i);
       var r = e * Math.PI / 180;
       x -= SEG * Math.cos(r);
-      y = Math.min(FLOOR, y - SEG * Math.sin(r));          // it sweeps along the floor, never through it
+      y = Math.min(FLOOR, y - SEG * Math.sin(r));          /* it sweeps along the floor, never through it */
       d += " L" + x.toFixed(1) + " " + y.toFixed(1);
     }
     return d;
