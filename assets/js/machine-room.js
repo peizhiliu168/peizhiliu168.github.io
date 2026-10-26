@@ -97,8 +97,12 @@
     path = smooth(raw).slice(1);
     target = mark ? { x: mark[0], y: mark[1], t: performance.now() } : null;
   }
+  // The exit door is in the bottom wall; stepping onto the mat in front of it leaves the room.
+  const DOOR = { x0: 1, x1: 3, y: H - 1 }, MAT = [2.5, H - 1.5];
+  const onDoor = (tx, ty) => ty === DOOR.y && tx >= DOOR.x0 && tx <= DOOR.x1;
   function goToTile(tx, ty) {
     if (tx < 0 || ty < 0 || tx >= W || ty >= H) return;
+    if (onDoor(tx, ty)) return goTo((x, y) => x === Math.floor(MAT[0]) && y === Math.floor(MAT[1]), MAT);
     const o = objAt[ty][tx];
     if (o && o.stop) return goToStop(STOP[o.stop]);
     if (walkable(tx, ty)) return goTo((x, y) => x === tx && y === ty, [tx + .5, ty + .5]);
@@ -170,7 +174,7 @@
     const [x, y] = tileFromEvent(e), tx = Math.floor(x), ty = Math.floor(y);
     const o = tx >= 0 && ty >= 0 && tx < W && ty < H ? objAt[ty][tx] : null;
     hover = o && o.stop ? STOP[o.stop] : null;
-    cv.classList.toggle("over", !!hover);
+    cv.classList.toggle("over", !!hover || onDoor(tx, ty));
     if (dragging && performance.now() - lastRetarget > 110) { goToTile(tx, ty); lastRetarget = performance.now(); }
   });
   const stopDrag = () => { dragging = false; };
@@ -539,6 +543,22 @@
     ctx.beginPath(); ctx.ellipse(target.x, target.y, .15 + k * .25, (.15 + k * .25) * .6, 0, 0, 7); ctx.stroke();
   }
 
+  // Leaving: only once the cat has walked onto the mat this visit, so a visitor whose saved
+  // position is on the mat isn't sent away the moment the page loads.
+  let exitArmed = false, leaving = false;
+  function checkExit() {
+    const onMat = Math.hypot(P.x - MAT[0], P.y - MAT[1]) < .4;
+    if (!onMat) { exitArmed = true; return; }
+    if (!exitArmed || leaving) return;
+    leaving = true; path = []; target = null; keys.clear();
+    const go = () => { saveState(); location.href = stage.dataset.exit || "/"; };
+    if (reduce) return go();
+    document.body.classList.add("leaving");
+    setTimeout(go, 450);
+  }
+  // a back/forward-cache restore after leaving shows the room again
+  window.addEventListener("pageshow", e => { if (e.persisted) { leaving = false; exitArmed = false; document.body.classList.remove("leaving"); } });
+
   // --- loop ---
   let last = performance.now();
   function frame(now) {
@@ -561,6 +581,7 @@
     if (P.moving) P.walk += dt;
     updateKitten(dt, now / 1000);
 
+    checkExit();
     let best = null, bd = .95;
     POIS.forEach(o => { const d = distToStop(P.x, P.y, o); if (d < bd) { bd = d; best = o; } });
     if (best !== near) {
@@ -602,6 +623,7 @@
   let resetting = false;
   function saveState() {
     if (resetting) return;
+    if (leaving) { P.x = MAT[0]; P.y = MAT[1] - 1; } // come back just inside the door
     const t = performance.now() / 1000;
     const state = {
       player: [P.x, P.y, P.face],

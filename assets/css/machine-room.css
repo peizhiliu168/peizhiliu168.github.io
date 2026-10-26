@@ -49,6 +49,7 @@ header nav { display: flex; flex-wrap: wrap; gap: 6px 18px; font: 13px var(--fon
 .hud b { color: #f2b440; font-weight: 400; }
 @media (max-width: 520px) { .hud .help { display: none; } }
 
+body.leaving .wrap { opacity: 0; transition: opacity .4s ease-in; }
 .dialog { background: var(--panel); border: 2px solid var(--ink); border-radius: 4px; box-shadow: 5px 5px 0 var(--line); padding: 18px 20px 20px; min-width: 0; min-height: 260px; }
 .dialog .who { font: 11px var(--font-label); color: var(--muted); letter-spacing: .06em; margin: 0 0 8px; display: flex; justify-content: space-between; gap: 8px; }
 .dialog .who span:last-child { color: var(--signal); }
