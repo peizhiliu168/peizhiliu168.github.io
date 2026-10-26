@@ -204,10 +204,16 @@
     if (y1 === y0 && h) y1 = y0 + 1;
     ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillRect(x0, y0, x1 - x0, y1 - y0); ctx.setTransform(m);
   };
+  // Text is drawn at whole device pixels. Silkscreen is a pixel font, so it is sized in
+  // multiples of 4 device pixels, where its strokes line up with the pixel grid.
+  function fontPx(size, font) {
+    const px = Math.max(8, size * T) * dpr;
+    return font === "Silkscreen" ? Math.max(8, Math.round(px / 4) * 4) : Math.round(px);
+  }
   function text(str, x, y, size, color, font = "Silkscreen", align = "center") {
-    ctx.save(); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.font = `${Math.max(8, size * T)}px "${font}", monospace`; ctx.fillStyle = color; ctx.textAlign = align; ctx.textBaseline = "middle";
-    ctx.fillText(str, x * T, y * T); ctx.restore();
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.font = `${fontPx(size, font)}px "${font}", monospace`; ctx.fillStyle = color; ctx.textAlign = align; ctx.textBaseline = "middle";
+    ctx.fillText(str, Math.round(x * T * dpr), Math.round(y * T * dpr)); ctx.restore();
   }
   const px = 1 / 32;
 
@@ -268,9 +274,9 @@
     plate(o.label, o.x + o.w / 2, o.y - .55);
   }
   function plate(label, cx, cy) {
-    ctx.save(); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.font = `${Math.max(8, .3 * T)}px "Silkscreen", monospace`;
-    const w = ctx.measureText(label).width / T + .3; ctx.restore();
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.font = `${fontPx(.3, "Silkscreen")}px "Silkscreen", monospace`;
+    const w = ctx.measureText(label).width / (T * dpr) + .3; ctx.restore();
     rect(cx - w / 2, cy - .2, w, .4, "#f3f4f6"); rect(cx - w / 2, cy + .2, w, px * 1.5, "#8a929c");
     text(label, cx, cy + .01, .3, "#1d232a");
   }
@@ -479,14 +485,15 @@
   }
   function drawEmote(t) {
     if (!K.emote || t > K.emoteUntil) return;
-    ctx.save(); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const size = Math.max(9, .24 * T); ctx.font = `${size}px "Silkscreen", monospace`;
-    const w = ctx.measureText(K.emote).width + size * .8, h = size * 1.5;
-    const cx = K.x * T, cy = (K.y - (K.pose === "sleep" ? .55 : .78)) * T - h / 2;
-    ctx.fillStyle = "#ffffff"; ctx.strokeStyle = "#4a2a12"; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.roundRect ? ctx.roundRect(cx - w / 2, cy - h / 2, w, h, 4) : ctx.rect(cx - w / 2, cy - h / 2, w, h); ctx.fill(); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(cx - 4, cy + h / 2); ctx.lineTo(cx, cy + h / 2 + 5); ctx.lineTo(cx + 4, cy + h / 2); ctx.fill();
-    ctx.fillStyle = "#4a2a12"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(K.emote, cx, cy + 1);
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    const size = fontPx(.24, "Silkscreen"); ctx.font = `${size}px "Silkscreen", monospace`;
+    const w = Math.round(ctx.measureText(K.emote).width + size * .8), h = Math.round(size * 1.5);
+    const cx = Math.round(K.x * T * dpr), cy = Math.round((K.y - (K.pose === "sleep" ? .55 : .78)) * T * dpr - h / 2);
+    const tip = Math.round(4 * dpr);
+    ctx.fillStyle = "#ffffff"; ctx.strokeStyle = "#4a2a12"; ctx.lineWidth = Math.max(1, Math.round(1.5 * dpr));
+    ctx.beginPath(); ctx.roundRect ? ctx.roundRect(cx - w / 2, cy - h / 2, w, h, 4 * dpr) : ctx.rect(cx - w / 2, cy - h / 2, w, h); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx - tip, cy + h / 2); ctx.lineTo(cx, cy + h / 2 + tip + 1); ctx.lineTo(cx + tip, cy + h / 2); ctx.fill();
+    ctx.fillStyle = "#4a2a12"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(K.emote, cx, cy + Math.round(dpr));
     ctx.restore();
   }
 
