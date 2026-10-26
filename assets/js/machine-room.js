@@ -145,9 +145,15 @@
   // --- canvas ---
   const stage = document.getElementById("stage"), cv = document.getElementById("cv"), ctx = cv.getContext("2d");
   let T = 32, dpr = 1;
+  // Size the canvas to the stage's inner box (inside its border) at the screen's full pixel
+  // density, and pin its CSS size to exactly that many device pixels so the browser never
+  // rescales the picture.
   function resize() {
-    const r = stage.getBoundingClientRect(); dpr = Math.min(window.devicePixelRatio || 1, 2);
-    cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr); T = r.width / W;
+    dpr = window.devicePixelRatio || 1;
+    const w = stage.clientWidth, h = stage.clientHeight;
+    cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+    cv.style.width = cv.width / dpr + "px"; cv.style.height = cv.height / dpr + "px";
+    T = cv.width / dpr / W;
   }
   new ResizeObserver(resize).observe(stage); resize();
 
@@ -179,7 +185,21 @@
   const hash = (a, b, c) => { let h = (a * 374761393 + b * 668265263 + c * 2147483647) | 0; h = (h ^ (h >>> 13)) * 1274126177; return ((h ^ (h >>> 16)) >>> 0) / 4294967295; };
 
   // drawing helpers (tile units)
-  const rect = (x, y, w, h, c) => { ctx.fillStyle = c; ctx.fillRect(x, y, w, h); };
+  // Fill a rectangle with its edges snapped to whole device pixels, so pixel-art edges stay
+  // sharp. Works under translate/scale (including the cats' mirrored sprites); anything
+  // rotated falls back to a normal fill.
+  const rect = (x, y, w, h, c) => {
+    ctx.fillStyle = c;
+    const m = ctx.getTransform();
+    if (m.b || m.c) { ctx.fillRect(x, y, w, h); return; }
+    let x0 = Math.round(m.a * x + m.e), x1 = Math.round(m.a * (x + w) + m.e);
+    let y0 = Math.round(m.d * y + m.f), y1 = Math.round(m.d * (y + h) + m.f);
+    if (x1 < x0) [x0, x1] = [x1, x0];
+    if (y1 < y0) [y0, y1] = [y1, y0];
+    if (x1 === x0 && w) x1 = x0 + 1;
+    if (y1 === y0 && h) y1 = y0 + 1;
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillRect(x0, y0, x1 - x0, y1 - y0); ctx.setTransform(m);
+  };
   function text(str, x, y, size, color, font = "Silkscreen", align = "center") {
     ctx.save(); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.font = `${Math.max(8, size * T)}px "${font}", monospace`; ctx.fillStyle = color; ctx.textAlign = align; ctx.textBaseline = "middle";
