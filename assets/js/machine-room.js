@@ -139,6 +139,7 @@
     const a = articles[o.id];
     const left = POIS.length - seen.size;
     dialog.innerHTML = a.innerHTML + `<p class="hint">${left ? `${left} stop${left > 1 ? "s" : ""} left. Look for the yellow markers.` : "You found every stop. Thanks for visiting."}</p>`;
+    dialog.scrollTop = 0;
     dialog.classList.remove("fresh"); void dialog.offsetWidth; dialog.classList.add("fresh");
   }
   function updateCount() {
@@ -158,6 +159,7 @@
     cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
     cv.style.width = cv.width / dpr + "px"; cv.style.height = cv.height / dpr + "px";
     T = cv.width / dpr / W;
+    stage.parentElement.style.setProperty("--room-h", stage.offsetHeight + "px");
   }
   new ResizeObserver(resize).observe(stage); resize();
 
